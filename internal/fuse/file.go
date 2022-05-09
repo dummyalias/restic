@@ -105,6 +105,9 @@ func (f *openFile) getBlobAt(ctx context.Context, i int) (blob []byte, err error
 	blob, err = f.root.repo.LoadBlob(ctx, restic.DataBlob, f.node.Content[i], nil)
 	if err != nil {
 		debug.Log("LoadBlob(%v, %v) failed: %v", f.node.Name, f.node.Content[i], err)
+		if errors.Is(err, context.Canceled) {
+			return nil, context.Canceled
+		}
 		return nil, err
 	}
 
